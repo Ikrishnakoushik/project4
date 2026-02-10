@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prism - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #1a1a1a;
+            --text-light: #666666;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --secondary: #a855f7;
+            --border-radius: 16px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --header-height: 70px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-top: var(--header-height);
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--header-height);
+            background: var(--card-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--accent), var(--secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+            margin: 0 20px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 25px;
+            background: #f8fafc;
+            outline: none;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        .search-bar input:focus {
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar-sm {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+
+        .avatar-sm:hover {
+            border-color: var(--accent);
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 30px;
+            padding: 30px 20px;
+        }
+
+        /* Sidebar - Navigation/Topics */
+        .sidebar-left {
+            position: sticky;
+            top: calc(var(--header-height) + 30px);
+            height: calc(100vh - var(--header-height) - 60px);
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 12px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: 0.2s;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: #e0e7ff;
+            color: var(--accent);
+        }
+
+        .nav-item i {
+            width: 25px;
+            margin-right: 10px;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin: 20px 0 10px 15px;
+            font-weight: 700;
+        }
+
+        /* Main Feed */
+        .feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .create-post-placeholder {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .create-post-placeholder:hover {
+            background: #f8fafc;
+        }
+
+        .create-input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 25px;
+            background: #f1f5f9;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        /* Post Card re-used/adapted */
+        .post-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .post-user-info {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .post-author {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .post-time {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .post-tag {
+            font-size: 0.75rem;
+            background: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 12px;
+            color: #475569;
+        }
+
+        .post-content {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #334155;
+            white-space: pre-wrap;
+        }
+
+        .post-actions {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-around;
+            color: #64748b;
+        }
+
+        .action-btn {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .action-btn:hover {
+            color: var(--accent);
+        }
+
+        /* Right Sidebar - Trending/Spreaders */
+        .sidebar-right {
+            position: sticky;
+            top: calc(var(--header-height) + 30px);
+            height: fit-content;
+        }
+
+        .widget {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .widget-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .spreader-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .spreader-item:last-child {
+            border-bottom: none;
+        }
+
+        .spreader-info {
+            flex: 1;
+        }
+
+        .spreader-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: block;
+        }
+
+        .spreader-role {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .follow-btn {
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 80px 1fr;
+            }
+
+            .sidebar-right {
+                display: none;
+            }
+
+            .nav-item span {
+                display: none;
+            }
+
+            .section-label {
+                display: none;
+            }
+
+            .nav-item {
+                justify-content: center;
+            }
+
+            .nav-item i {
+                margin: 0;
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding-bottom: 80px;
+            }
+
+            .sidebar-left {
+                position: fixed;
+                bottom: 0;
+                top: auto;
+                left: 0;
+                width: 100%;
+                height: 60px;
+                background: var(--card-bg);
+                display: flex;
+                justify-content: space-around;
+                z-index: 90;
+                padding: 0;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            }
+
+            .nav-item {
+                margin: 0;
+                padding: 10px;
+                border-radius: 0;
+            }
+
+            .section-label {
+                display: none;
+            }
+
+            .search-bar {
+                display: none;
+            }
+
+            /* Hide search on mobile for simplicity or add toggle */
+            header {
+                padding: 0 20px;
+            }
+        }
+
+        /* Carousel Styles Integrated */
+        .carousel-section {
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            background: var(--card-bg);
+        }
+
+        .carousel-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 40px;
+            opacity: 0.5;
+            transform: scale(0.9);
+            transition: all 0.5s;
+            background: var(--glass);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .slide-content {
+            text-align: center;
+            color: var(--text-main);
+        }
+
+        .slide h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+
+        .slide p {
+            font-size: 1rem;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: var(--accent);
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="index.html" class="logo">Prism</a>
+
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search posts, topics, or spreaders...">
+        </div>
+
+        <div class="user-menu">
+            <a href="profile.html" class="avatar-sm" title="Your Profile">
+                <i class="fas fa-user"></i>
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Sidebar Left -->
+        <aside class="sidebar-left">
+            <a href="#" class="nav-item active" onclick="filterPosts('all')">
+                <i class="fas fa-home"></i> <span>Home Feed</span>
+            </a>
+            <a href="#" class="nav-item" onclick="filterPosts('trending')">
+                <i class="fas fa-fire"></i> <span>Trending</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i class="fas fa-user"></i> <span>Profile</span>
+            </a>
+
+            <div class="section-label">Topics</div>
+            <a href="#" class="nav-item" onclick="filterPosts('General')">
+                <i class="fas fa-hashtag"></i> <span>General</span>
+            </a>
+            <a href="#" class="nav-item" onclick="filterPosts('Update')">
+                <i class="fas fa-sync"></i> <span>Updates</span>
+            </a>
+            <a href="#" class="nav-item" onclick="filterPosts('Idea')">
+                <i class="fas fa-lightbulb"></i> <span>Ideas</span>
+            </a>
+            <a href="#" class="nav-item" onclick="filterPosts('News')">
+                <i class="fas fa-newspaper"></i> <span>News</span>
+            </a>
+        </aside>
+
+        <!-- Main Feed -->
+        <main class="feed">
+            <!-- Integrated Carousel -->
+            <div class="carousel-section">
+                <div class="carousel-container" id="features">
+                    <div class="carousel-track" id="track">
+                        <!-- Slide 1 -->
+                        <div class="slide active">
+                            <div class="slide-content">
+                                <h2>Welcome to Prism</h2>
+                                <p>An all-in-one platform designed for modern creators.</p>
+                            </div>
+                        </div>
+                        <!-- Slide 2 -->
+                        <div class="slide">
+                            <div class="slide-content">
+                                <h2>Showcase Your Work</h2>
+                                <p>Highlight your best projects with premium aesthetics.</p>
+                            </div>
+                        </div>
+                        <!-- Slide 3 -->
+                        <div class="slide">
+                            <div class="slide-content">
+                                <h2>Join the Community</h2>
+                                <p>Connect, share, and grow with like-minded individuals.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-nav" id="nav">
+                        <div class="dot active" onclick="goToSlide(0)"></div>
+                        <div class="dot" onclick="goToSlide(1)"></div>
+                        <div class="dot" onclick="goToSlide(2)"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Create Post Trigger (redirects to profile for now) -->
+            <div class="create-post-placeholder" onclick="window.location.href='profile.html'">
+                <div class="avatar-sm" style="width: 35px; height: 35px; background: #e2e8f0; font-size: 1rem;"><i
+                        class="fas fa-pen"></i></div>
+                <div class="create-input">Start a new spread...</div>
+            </div>
+
+            <div id="feed-container">
+                <!-- Posts will be injected here -->
+                <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                    <p style="margin-top: 10px;">Loading your feed...</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Sidebar Right -->
+        <aside class="sidebar-right">
+            <div class="widget">
+                <h3 class="widget-title">Top Spreaders</h3>
+                <div id="spreaders-list">
+                    <!-- Dynamic spreaders list -->
+                    <div class="spreader-item">
+                        <div class="avatar-sm" style="width: 32px; height: 32px; font-size: 0.8rem;">JD</div>
+                        <div class="spreader-info">
+                            <span class="spreader-name">John Doe</span>
+                            <span class="spreader-role">Publisher</span>
+                        </div>
+                        <span class="follow-btn">View</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <h3 class="widget-title">Suggested Topics</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <span class="post-tag">#Design</span>
+                    <span class="post-tag">#Coding</span>
+                    <span class="post-tag">#LifeHacks</span>
+                    <span class="post-tag">#AI</span>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let allPosts = []; // Store posts locally for client-side filtering
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchPosts();
+            setupSearch();
+        });
+
+        async function fetchPosts() {
+            try {
+                const res = await fetch(`${API_URL}/posts`);
+                const posts = await res.json();
+                allPosts = posts; // Cache posts
+                renderPosts(posts);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('feed-container').innerHTML = `
+                    <div style="text-align: center; color: var(--error); padding: 20px;">
+                        Failed to load feed. Please try again.
+                    </div>`;
+            }
+        }
+
+        function renderPosts(posts) {
+            const container = document.getElementById('feed-container');
+
+            if (posts.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                        <p>No spreads found. Be the first to spread something!</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = posts.map(post => `
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-user-info">
+                            <div class="avatar-sm">${post.username.charAt(0).toUpperCase()}</div>
+                            <div>
+                                <div class="post-author">${post.username}</div>
+                                <div class="post-time">${new Date(post.createdAt).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                        <span class="post-tag">${post.tag || 'General'}</span>
+                    </div>
+                    <div class="post-content">${linkify(post.content)}</div>
+                    <div class="post-actions">
+                        <div class="action-btn"><i class="far fa-heart"></i> Like</div>
+                        <div class="action-btn"><i class="far fa-comment"></i> Comment</div>
+                        <div class="action-btn"><i class="far fa-share-square"></i> Share</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterPosts(criteria) {
+            // UI Update
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if (event && event.currentTarget) event.currentTarget.classList.add('active');
+
+            let filtered = allPosts;
+
+            if (criteria === 'all') {
+                filtered = allPosts;
+            } else if (criteria === 'trending') {
+                // Mock trending - just shuffle or show last 5
+                filtered = allPosts.slice(0, 5);
+            } else {
+                // Filter by tag
+                filtered = allPosts.filter(p => p.tag === criteria);
+            }
+
+            renderPosts(filtered);
+
+            // On mobile close menu if exists (not implemented here but good practice)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function setupSearch() {
+            const input = document.getElementById('searchInput');
+            input.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const filtered = allPosts.filter(post =>
+                    post.content.toLowerCase().includes(term) ||
+                    post.username.toLowerCase().includes(term) ||
+                    (post.tag && post.tag.toLowerCase().includes(term))
+                );
+                renderPosts(filtered);
+            });
+        }
+
+        // Helper to make links clickable (basic)
+        function linkify(text) {
+            var urlRegex = /(https?:\/\/[^\s]+)/g;
+            return text.replace(urlRegex, function (url) {
+                return '<a href="' + url + '" target="_blank" style="color:var(--accent)">' + url + '</a>';
+            });
+        }
+
+        // Carousel Logic
+        const track = document.getElementById('track');
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        let currentSlide = 0;
+
+        function updateCarousel() {
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) slide.classList.add('active');
+                else slide.classList.remove('active');
+            });
+
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+        }
+
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateCarousel();
+        }, 5000);
+    </script>
+</body>
+
+</html>

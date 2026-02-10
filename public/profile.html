@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prism | Your Name</title>
+
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #1a1a1a;
+            --text-light: #666666;
+            --accent: #2563eb;
+            /* Royal Blue */
+            --accent-hover: #1d4ed8;
+            --tag-bg: #e2e8f0;
+            --tag-text: #475569;
+            --border-radius: 16px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        /* --- BASIC RESET & TYPOGRAPHY --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        /* --- LAYOUT GRID --- */
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            /* Fixed Sidebar, Fluid Content */
+            gap: 40px;
+        }
+
+        /* Mobile Layout */
+        @media (max-width: 850px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-card {
+                position: relative !important;
+                top: 0 !important;
+            }
+        }
+
+        /* --- LEFT COLUMN: PROFILE HEADER --- */
+        .profile-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            position: sticky;
+            top: 40px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border: 4px solid white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+
+        .handle {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .bio {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        /* Tech Stack Tags */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .tag {
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .social-btn {
+            text-decoration: none;
+            color: var(--text-main);
+            background: #f1f5f9;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            font-size: 1.2rem;
+        }
+
+        .social-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Auth Buttons */
+        .auth-buttons {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .auth-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+
+        .auth-btn.secondary {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid #e2e8f0;
+        }
+
+        .auth-btn:hover {
+            opacity: 0.9;
+        }
+
+        .auth-btn.secondary:hover {
+            background: #f8f9fa;
+            color: var(--text-main);
+        }
+
+        #user-greeting {
+            display: none;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        /* --- RIGHT COLUMN: FEED --- */
+        .feed {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        /* Projects Section */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .view-all {
+            font-size: 0.85rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .project-img {
+            height: 140px;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #94a3b8;
+        }
+
+        .project-content {
+            padding: 20px;
+        }
+
+        .project-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .project-desc {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* Create Post Card */
+        #create-post-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 2px solid var(--accent);
+            display: none;
+            /* Hidden by default */
+        }
+
+        .post-textarea {
+            width: 100%;
+            border: none;
+            resize: none;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            margin-bottom: 10px;
+            min-height: 80px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 15px;
+        }
+
+        .post-tag-select {
+            padding: 5px 10px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            outline: none;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        /* Blog Section */
+        .blog-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .blog-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .blog-card:hover {
+            border-left-color: var(--accent);
+            transform: translateX(5px);
+        }
+
+        .blog-meta {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .blog-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+
+        .blog-excerpt {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .blog-author {
+            color: var(--accent);
+        }
+
+        /* Newsletter */
+        .newsletter {
+            background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
+            color: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        .newsletter h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .newsletter p {
+            opacity: 0.8;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .newsletter input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .newsletter button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .newsletter button:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+
+        /* --- MODAL --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            padding: 30px;
+            border: 1px solid #888;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal h2 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .form-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .form-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .switch-auth {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .switch-auth a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="profile-card fade-in" style="animation-delay: 0.1s;">
+            <a href="main.html"
+                style="position: absolute; top: 15px; left: 15px; color: var(--accent); text-decoration: none; font-size: 0.9rem; font-weight: 600;"><i
+                    class="fas fa-arrow-left"></i> Home</a>
+            <div class="avatar">👨‍💻</div>
+            <h1>Your Name</h1>
+            <span class="handle">@yourhandle</span>
+            <p class="bio">Digital Craftsman & Writer. Building things for the web and sharing what I learn along the
+                way.</p>
+
+            <div class="tags">
+                <span class="tag">Design</span>
+                <span class="tag">Development</span>
+                <span class="tag">AI</span>
+                <span class="tag">Writing</span>
+            </div>
+
+            <div class="social-links">
+                <a href="#" class="social-btn" title="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-btn" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-btn" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            </div>
+
+            <div class="auth-buttons" id="auth-section">
+                <div id="logged-out-view">
+                    <button class="auth-btn" onclick="openModal('loginModal')">Sign In</button>
+                    <button class="auth-btn secondary" onclick="openModal('registerModal')">Sign Up</button>
+                </div>
+                <div id="logged-in-view" style="display: none;">
+                    <div id="user-greeting">Welcome, User</div>
+                    <button class="auth-btn secondary" onclick="logout()">Log Out</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- RIGHT CONTENT -->
+        <main class="feed">
+
+            <!-- PROJECTS SECTION -->
+            <section class="fade-in" style="animation-delay: 0.2s;">
+                <div class="section-header">
+                    <h2 class="section-title">Selected Projects</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+
+                <div class="projects-grid">
+                    <a href="#" class="project-card">
+                        <div class="project-img">🚀</div>
+                        <div class="project-content">
+                            <h3 class="project-title">Project Alpha</h3>
+                            <p class="project-desc">A minimal task manager for creative teams.</p>
+                        </div>
+                    </a>
+                    <a href="#" class="project-card">
+                        <div class="project-img">🎨</div>
+                        <div class="project-content">
+                            <h3 class="project-title">Design System</h3>
+                            <p class="project-desc">Open source UI kit for modern web apps.</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- CREATE POST (Only visible when logged in) -->
+            <div id="create-post-card" class="fade-in" style="animation-delay: 0.25s;">
+                <textarea id="postContent" class="post-textarea"
+                    placeholder="What's on your mind? Share an update, idea, or news..."></textarea>
+                <div class="post-actions">
+                    <select id="postTag" class="post-tag-select">
+                        <option value="General">General</option>
+                        <option value="Update">Update</option>
+                        <option value="Idea">Idea</option>
+                        <option value="News">News</option>
+                    </select>
+                    <button class="auth-btn btn-sm" style="width: auto;" onclick="createPost()">Post</button>
+                </div>
+            </div>
+
+            <!-- BLOG/POSTS SECTION -->
+            <section class="fade-in" style="animation-delay: 0.3s;">
+                <div class="section-header">
+                    <h2 class="section-title">Community Feed</h2>
+                </div>
+
+                <div id="posts-container" class="blog-list">
+                    <!-- Posts will be loaded here -->
+                    <div style="text-align:center; padding: 20px; color: #888;">Loading posts...</div>
+                </div>
+            </section>
+
+            <!-- NEWSLETTER -->
+            <section class="newsletter fade-in" style="animation-delay: 0.4s;">
+                <h3>Join the Inner Circle</h3>
+                <p>I send one email a week with my latest projects and thoughts. No spam, ever.</p>
+                <form class="input-group">
+                    <input type="email" placeholder="your@email.com" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+            </section>
+
+
+        </main>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2>Sign In</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="form-btn">Sign In</button>
+            </form>
+            <div class="switch-auth">
+                New here? <a onclick="switchModal('loginModal', 'registerModal')">Create an account</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2>Create Account</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>I want to:</label>
+                    <select id="regRole"
+                        style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none;">
+                        <option value="reader">Read Posts (Reader)</option>
+                        <option value="publisher">Write Posts (Publisher)</option>
+                    </select>
+                </div>
+                <button type="submit" class="form-btn">Sign Up</button>
+            </form>
+            <div class="switch-auth">
+                Already have an account? <a onclick="switchModal('registerModal', 'loginModal')">Sign In</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal Logic
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = "flex";
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        function switchModal(closeId, openId) {
+            closeModal(closeId);
+            openModal(openId);
+        }
+
+        // Close modal if clicking outside
+        window.onclick = function (event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
+        }
+
+        // Auth Logic
+        const API_URL = 'http://localhost:3000/api';
+
+        // Check login status on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            const role = localStorage.getItem('role');
+            if (token && username) {
+                showLoggedIn(username, role);
+            }
+            fetchPosts(); // Load posts regardless of login
+        });
+
+        function showLoggedIn(username, role) {
+            document.getElementById('logged-out-view').style.display = 'none';
+            document.getElementById('logged-in-view').style.display = 'block';
+            document.getElementById('user-greeting').innerText = `Welcome, ${username}`;
+
+            // Only show Create Post if user is a Publisher
+            if (role === 'publisher') {
+                document.getElementById('create-post-card').style.display = 'block';
+            } else {
+                document.getElementById('create-post-card').style.display = 'none';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            document.getElementById('logged-out-view').style.display = 'block';
+            document.getElementById('logged-in-view').style.display = 'none';
+            document.getElementById('create-post-card').style.display = 'none';
+        }
+
+        // Handle Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const res = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('username', data.username);
+                    localStorage.setItem('role', data.role);
+                    showLoggedIn(data.username, data.role);
+                    closeModal('loginModal');
+                } else {
+                    alert(data.msg || 'Login failed');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Server error');
+            }
+        });
+
+        // Handle Register
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const role = document.getElementById('regRole').value;
+
+            try {
+                const res = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, role })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert('Registration successful! Please sign in.');
+                    switchModal('registerModal', 'loginModal');
+                } else {
+                    alert(data.msg || 'Registration failed');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Server error');
+            }
+        });
+
+
+        // --- POSTS LOGIC ---
+
+        async function fetchPosts() {
+            try {
+                const res = await fetch(`${API_URL}/posts`);
+                const posts = await res.json();
+
+                const container = document.getElementById('posts-container');
+                container.innerHTML = '';
+
+                if (posts.length === 0) {
+                    container.innerHTML = '<div style="text-align:center; padding: 20px; color: #888;">No posts yet. Be the first to share!</div>';
+                    return;
+                }
+
+                posts.forEach(post => {
+                    const date = new Date(post.createdAt).toLocaleDateString();
+                    const html = `
+                        <article class="blog-card">
+                            <div class="blog-meta">
+                                <span>${date} • ${post.tag}</span>
+                                <span class="blog-author">@${post.username}</span>
+                            </div>
+                            <div class="blog-excerpt">${post.content}</div>
+                        </article>
+                    `;
+                    container.innerHTML += html;
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function createPost() {
+            const content = document.getElementById('postContent').value;
+            const tag = document.getElementById('postTag').value;
+            const token = localStorage.getItem('token');
+
+            if (!content.trim()) return alert("Content cannot be empty");
+
+            try {
+                const res = await fetch(`${API_URL}/posts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify({ content, tag })
+                });
+
+                if (res.ok) {
+                    document.getElementById('postContent').value = ''; // Clear input
+                    fetchPosts(); // Refresh list
+                } else {
+                    alert('Failed to post');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    </script>
+
+</body>
+
+</html>
