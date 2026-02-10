@@ -118,12 +118,83 @@
 
         /* Layout */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
+            /* Increased from 1200px */
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 250px 1fr 300px;
-            gap: 30px;
-            padding: 30px 20px;
+            grid-template-columns: 220px 1fr 280px;
+            /* Reduced sidebars slightly for more mid space */
+            gap: 20px;
+            /* Reduced gap */
+            padding: 20px 10px;
+            /* Reduced padding to move items to edge */
+        }
+
+        /* Mobile Nav Default - Hidden on Desktop */
+        .mobile-nav {
+            display: none;
+        }
+
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 200px 1fr;
+            }
+
+            .sidebar-right {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding-bottom: 80px;
+                /* Space for bottom nav */
+            }
+
+            .sidebar-left {
+                display: none;
+                /* Hide sidebar list on mobile */
+            }
+
+            /* Bottom Navigation for Mobile */
+            .mobile-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: var(--card-bg);
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+                z-index: 1000;
+                justify-content: space-around;
+                padding: 10px 0;
+            }
+
+            .mobile-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-decoration: none;
+                color: var(--text-light);
+                font-size: 0.75rem;
+            }
+
+            .mobile-nav-item i {
+                font-size: 1.25rem;
+                margin-bottom: 4px;
+            }
+
+            .mobile-nav-item.active {
+                color: var(--accent);
+            }
+
+            .header-search {
+                display: none;
+                /* Simplify header on mobile */
+            }
         }
 
         /* Sidebar - Navigation/Topics */
@@ -203,7 +274,11 @@
             background: var(--card-bg);
             border-radius: var(--border-radius);
             padding: 25px;
+            margin-bottom: 30px;
+            /* Increased spacing */
             box-shadow: var(--shadow);
+            transition: transform 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.5);
             animation: fadeIn 0.5s ease;
         }
 
@@ -483,6 +558,111 @@
             background: var(--accent);
             transform: scale(1.2);
         }
+
+        /* Reader Mode Overlay */
+        #reader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            /* Dark backdrop */
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: none;
+            /* Hidden by default */
+            justify-content: center;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #reader-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .reader-content {
+            background: #fffafa;
+            /* Paper-like off-white */
+            color: #333;
+            max-width: 800px;
+            width: 100%;
+            min-height: 100%;
+            padding: 60px 40px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            animation: slideUpReader 0.4s ease-out;
+        }
+
+        @keyframes slideUpReader {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .reader-close {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 2001;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .reader-close:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: rotate(90deg);
+        }
+
+        /* Reader Typography */
+        .reader-title {
+            font-family: 'Georgia', serif;
+            /* Serif for reading */
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .reader-meta {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .reader-body {
+            font-family: 'Georgia', serif;
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #2c2c2c;
+        }
+
+        .reader-body p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Dark mode toggle for reader could be added later */
     </style>
 </head>
 
@@ -614,9 +794,49 @@
 
     </div>
 
+    <!-- Reader Mode Overlay -->
+    <div id="reader-overlay">
+        <button class="reader-close" onclick="closeReader()"><i class="fas fa-times"></i></button>
+        <div class="reader-content">
+            <h1 class="reader-title" id="reader-title">Post Title</h1>
+            <div class="reader-meta">
+                <span id="reader-author">Author Name</span>
+                <span id="reader-time">Time</span>
+            </div>
+            <div class="reader-body" id="reader-body">
+                <!-- Content goes here -->
+            </div>
+        </div>
+    </div>
+
     <script>
+        // --- Reader Mode Logic ---
+        function openReader(title, author, time, content) {
+            const overlay = document.getElementById('reader-overlay');
+            document.getElementById('reader-title').innerText = title || "Prism Post";
+            document.getElementById('reader-author').innerText = author;
+            document.getElementById('reader-time').innerText = time;
+
+            // Format content with paragraphs
+            const formatted = content.split('\n').filter(p => p.trim() !== '').map(p => `<p>${p}</p>`).join('');
+            document.getElementById('reader-body').innerHTML = formatted;
+
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeReader() {
+            document.getElementById('reader-overlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.getElementById('reader-overlay').addEventListener('click', (e) => {
+            if (e.target.id === 'reader-overlay') closeReader();
+        });
+
+        // --- Core Logic ---
         const API_URL = 'http://localhost:3000/api';
-        let allPosts = []; // Store posts locally for client-side filtering
+        let allPosts = [];
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchPosts();
@@ -627,7 +847,7 @@
             try {
                 const res = await fetch(`${API_URL}/posts`);
                 const posts = await res.json();
-                allPosts = posts; // Cache posts
+                allPosts = posts;
                 renderPosts(posts);
             } catch (err) {
                 console.error(err);
@@ -649,53 +869,171 @@
                 return;
             }
 
-            container.innerHTML = posts.map(post => `
-                <div class="post-card">
+            container.innerHTML = posts.map(post => {
+                const authorName = post.username || post.author || 'User';
+                const initial = authorName.charAt(0).toUpperCase();
+                const dateStr = post.createdAt ? new Date(post.createdAt).toLocaleDateString() : 'Just now';
+                const likesCount = post.likes ? post.likes.length : 0;
+                const commentsCount = post.comments ? post.comments.length : 0;
+
+                // Safe content escaping
+                const safeContent = (post.content || '').replace(/`/g, '\\`').replace(/\\/g, '\\\\');
+                const safeAuthor = authorName.replace(/'/g, "\\'");
+                const safeDate = dateStr.replace(/'/g, "\\'");
+
+                // Comments HTML (Updated with Avatar and Link)
+                const commentsList = (post.comments || []).map(c => {
+                    const cInitial = (c.username || 'U').charAt(0).toUpperCase();
+                    const cUserId = c.user || c._id; // Assuming c.user is the ID, fallback if needed
+                    // Note: c.user might be an object if populated, or ID string. 
+                    // In Post model: user: { type: ObjectId, ref: 'User' }
+                    // If not populated, it is ID.
+
+                    return `
+                    <div style="display: flex; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; flex-shrink: 0;">
+                            ${cInitial}
+                        </div>
+                        <div>
+                            <div style="font-size: 0.9rem;">
+                                <a href="profile.html?user=${c.user}" style="text-decoration: none; color: var(--primary); font-weight: 700; margin-right: 5px;">${c.username || 'User'}</a>
+                                <span style="font-size: 0.8rem; color: #aaa;">• Commented</span>
+                            </div>
+                            <div style="font-size: 0.95rem; color: var(--text-main); margin-top: 2px;">
+                                ${c.text}
+                            </div>
+                        </div>
+                    </div>
+                `}).join('');
+
+                // Always show 'Like' text, append count if > 0
+                const likeText = likesCount > 0 ? `${likesCount}` : 'Like';
+                const commentText = commentsCount > 0 ? `${commentsCount}` : 'Comment';
+
+                return `
+                <div class="post-card" id="post-${post._id}">
                     <div class="post-header">
                         <div class="post-user-info">
-                            <div class="avatar-sm">${post.username.charAt(0).toUpperCase()}</div>
+                            <div class="avatar-sm">${initial}</div>
                             <div>
-                                <div class="post-author">${post.username}</div>
-                                <div class="post-time">${new Date(post.createdAt).toLocaleDateString()}</div>
+                                <div class="post-author">${authorName}</div>
+                                <div class="post-time">${dateStr}</div>
                             </div>
                         </div>
                         <span class="post-tag">${post.tag || 'General'}</span>
                     </div>
-                    <div class="post-content">${linkify(post.content)}</div>
+                    <div class="post-content">${linkify(post.content || '')}</div>
+                    
                     <div class="post-actions">
-                        <div class="action-btn"><i class="far fa-heart"></i> Like</div>
-                        <div class="action-btn"><i class="far fa-comment"></i> Comment</div>
-                        <div class="action-btn"><i class="far fa-share-square"></i> Share</div>
+                        <div class="action-btn" onclick="toggleLike('${post._id}')">
+                            <i class="${likesCount > 0 ? 'fas' : 'far'} fa-heart" style="${likesCount > 0 ? 'color: #e11d48;' : ''}"></i> ${likeText}
+                        </div>
+                        <div class="action-btn" onclick="toggleComments('${post._id}')">
+                            <i class="far fa-comment"></i> ${commentText}
+                        </div>
+                        
+                        <div class="action-btn" onclick="openReader('Prism Post', '${safeAuthor}', '${safeDate}', \`${safeContent}\`)">
+                            <i class="fas fa-book-open"></i> Read
+                        </div>
+
+                        <div class="action-btn" onclick="sharePost('${post._id}')">
+                            <i class="far fa-share-square"></i> Share
+                        </div>
+                    </div>
+
+                    <!-- Comment Section -->
+                    <div id="comments-${post._id}" style="display: ${commentsCount > 0 ? 'block' : 'none'}; margin-top: 20px; border-top: 1px solid #f0f0f0; padding-top: 15px;">
+                        <div style="margin-bottom: 15px; max-height: 200px; overflow-y: auto;">
+                            ${commentsList.length > 0 ? commentsList : '<div style="color:#aaa; font-style:italic;">No comments yet. Be the first!</div>'}
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="input-${post._id}" placeholder="Write a comment..." style="flex: 1; padding: 10px 15px; border: 1px solid #ddd; border-radius: 20px; outline: none;">
+                            <button onclick="submitComment('${post._id}')" class="btn btn-primary" style="padding: 8px 20px; border-radius: 20px; background: var(--accent); color: white; border: none; cursor: pointer; font-weight: 600;">Post</button>
+                        </div>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        function filterPosts(criteria) {
-            // UI Update
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            if (event && event.currentTarget) event.currentTarget.classList.add('active');
+        // --- Interaction Functions (Global) ---
+        // --- Interaction Functions (Global) ---
+        window.toggleLike = async function (postId) {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return alert('Please login to like');
 
-            let filtered = allPosts;
+                const res = await fetch(`${API_URL}/posts/${postId}/like`, {
+                    method: 'PUT',
+                    headers: { 'x-auth-token': token }
+                });
 
-            if (criteria === 'all') {
-                filtered = allPosts;
-            } else if (criteria === 'trending') {
-                // Mock trending - just shuffle or show last 5
-                filtered = allPosts.slice(0, 5);
-            } else {
-                // Filter by tag
-                filtered = allPosts.filter(p => p.tag === criteria);
+                if (res.ok) {
+                    fetchPosts();
+                } else {
+                    const txt = await res.text();
+                    console.error("Like failed", txt);
+                    alert("Like failed: " + txt);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Error liking post: " + err.message);
             }
-
-            renderPosts(filtered);
-
-            // On mobile close menu if exists (not implemented here but good practice)
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+        window.toggleComments = function (postId) {
+            const section = document.getElementById(`comments-${postId}`);
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        }
+
+        window.submitComment = async function (postId) {
+            const input = document.getElementById(`input-${postId}`);
+            const text = input.value;
+            if (!text.trim()) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return alert('Please login to comment');
+
+                const res = await fetch(`${API_URL}/posts/${postId}/comment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify({ text })
+                });
+
+                if (res.ok) {
+                    input.value = '';
+                    fetchPosts();
+                } else {
+                    const txt = await res.text();
+                    console.error("Comment failed", txt);
+                    alert("Comment failed: " + txt);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Error commenting: " + err.message);
+            }
+        }
+
+        window.sharePost = function (postId) {
+            const url = `${window.location.origin}/main.html?post=${postId}`;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Link copied to clipboard!');
+            });
+        }
+
+        window.openReader = openReader; // Explicitly expose
 
         function setupSearch() {
             const input = document.getElementById('searchInput');
+            if (!input) return;
             input.addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase();
                 const filtered = allPosts.filter(post =>
@@ -707,7 +1045,6 @@
             });
         }
 
-        // Helper to make links clickable (basic)
         function linkify(text) {
             var urlRegex = /(https?:\/\/[^\s]+)/g;
             return text.replace(urlRegex, function (url) {
@@ -717,33 +1054,48 @@
 
         // Carousel Logic
         const track = document.getElementById('track');
-        const slides = document.querySelectorAll('.slide');
-        const dots = document.querySelectorAll('.dot');
-        let currentSlide = 0;
-
-        function updateCarousel() {
-            track.style.transform = `translateX(-${currentSlide * 100}%)`;
-
-            slides.forEach((slide, index) => {
-                if (index === currentSlide) slide.classList.add('active');
-                else slide.classList.remove('active');
-            });
-
-            dots.forEach((dot, index) => {
-                if (index === currentSlide) dot.classList.add('active');
-                else dot.classList.remove('active');
-            });
+        if (track) {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            let currentSlide = 0;
+            function updateCarousel() {
+                track.style.transform = `translateX(-${currentSlide * 100}%)`;
+                slides.forEach((slide, index) => {
+                    if (index === currentSlide) slide.classList.add('active');
+                    else slide.classList.remove('active');
+                });
+                dots.forEach((dot, index) => {
+                    if (index === currentSlide) dot.classList.add('active');
+                    else dot.classList.remove('active');
+                });
+            }
+            setInterval(() => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                updateCarousel();
+            }, 5000);
         }
+    </script>
+    <!-- Bottom Navigation for Mobile -->
+    <nav class="mobile-nav">
+        <a href="#" class="mobile-nav-item active" onclick="filterPosts('All')">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="mobile-nav-item" onclick="filterPosts('Trending')">
+            <i class="fas fa-fire"></i>
+            <span>Trending</span>
+        </a>
+        <a href="profile.html" class="mobile-nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
 
-        function goToSlide(index) {
-            currentSlide = index;
-            updateCarousel();
-        }
-
-        setInterval(() => {
-            currentSlide = (currentSlide + 1) % slides.length;
-            updateCarousel();
-        }, 5000);
+    <script>
+        // Simple logic to show mobile nav only on small screens via JS if needed, 
+        // but CSS @media query handles display:flex vs none.
+        // We set inline style display:none initially to avoid flash, but CSS will override.
+        // Actually best to remove inline style and rely on CSS.
     </script>
 </body>
 

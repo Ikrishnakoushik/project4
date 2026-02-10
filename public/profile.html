@@ -76,11 +76,17 @@
         @media (max-width: 850px) {
             .container {
                 grid-template-columns: 1fr;
+                gap: 20px;
             }
 
             .profile-card {
                 position: relative !important;
                 top: 0 !important;
+                margin-bottom: 20px;
+            }
+
+            h1 {
+                font-size: 1.2rem;
             }
         }
 
@@ -559,14 +565,15 @@
             <a href="main.html"
                 style="position: absolute; top: 15px; left: 15px; color: var(--accent); text-decoration: none; font-size: 0.9rem; font-weight: 600;"><i
                     class="fas fa-arrow-left"></i> Home</a>
-            <div class="avatar">👨‍💻</div>
-            <h1>Your Name</h1>
-            <span class="handle">@yourhandle</span>
-            <p class="bio">Digital Craftsman & Writer. Building things for the web and sharing what I learn along the
+            <div class="avatar" id="profile-avatar">👨‍💻</div>
+            <h1 id="profile-name">Loading...</h1>
+            <span class="handle" id="profile-handle">@...</span>
+            <p class="bio" id="profile-bio">Digital Craftsman & Writer. Building things for the web and sharing what I
+                learn along the
                 way.</p>
 
             <div class="tags">
-                <span class="tag">Design</span>
+                <span class="tag" id="profile-role">User</span>
                 <span class="tag">Development</span>
                 <span class="tag">AI</span>
                 <span class="tag">Writing</span>
@@ -579,19 +586,390 @@
             </div>
 
             <div class="auth-buttons" id="auth-section">
-                <div id="logged-out-view">
-                    <button class="auth-btn" onclick="openModal('loginModal')">Sign In</button>
-                    <button class="auth-btn secondary" onclick="openModal('registerModal')">Sign Up</button>
-                </div>
-                <div id="logged-in-view" style="display: none;">
-                    <div id="user-greeting">Welcome, User</div>
-                    <button class="auth-btn secondary" onclick="logout()">Log Out</button>
-                </div>
+                <!-- Auth buttons/Greeting managed by JS -->
             </div>
         </aside>
 
         <!-- RIGHT CONTENT -->
         <main class="feed">
+
+            <!-- SETTINGS MODAL -->
+            <div id="settingsModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('settingsModal')">&times;</span>
+                    <h2>Account Settings</h2>
+
+                    <div class="tabs"
+                        style="display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #eee;">
+                        <div class="tab active" onclick="switchSettingsTab('profile')" id="tab-profile"
+                            style="cursor: pointer; padding-bottom: 10px; border-bottom: 2px solid var(--accent);">
+                            Profile</div>
+                        <div class="tab" onclick="switchSettingsTab('security')" id="tab-security"
+                            style="cursor: pointer; padding-bottom: 10px; border-bottom: 2px solid transparent;">
+                            Security</div>
+                    </div>
+
+                    <form id="settingsProfileForm">
+                        <div class="form-group">
+                            <label>Display Name</label>
+                            <input type="text" id="setDisplayName" placeholder="Your Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Username (@handle)</label>
+                            <input type="text" id="setUsername" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Bio</label>
+                            <textarea id="setBio" rows="3"
+                                style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;"
+                                placeholder="Tell us about yourself..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="setEmail" required>
+                        </div>
+                        <button type="submit" class="form-btn">Save Profile</button>
+                        <div id="profileMsg" style="margin-top: 10px; text-align: center; font-size: 0.9rem;"></div>
+                    </form>
+
+                    <form id="settingsSecurityForm" style="display: none;">
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" id="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="newPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="confirmNewPassword" required>
+                        </div>
+                        <button type="submit" class="form-btn">Update Password</button>
+                        <div id="securityMsg" style="margin-top: 10px; text-align: center; font-size: 0.9rem;"></div>
+                    </form>
+                </div>
+            </div>
+
+            <script>
+                // --- Profile Logic ---
+                // API_URL is already defined in the script at the bottom
+
+                async function loadProfile() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const userId = urlParams.get('user');
+                    let userData = null;
+
+                    if (userId) {
+                        try {
+                            const res = await fetch(`${API_URL}/users/${userId}`);
+                            if (res.ok) {
+                                userData = await res.json();
+                            }
+                        } catch (e) { console.error(e); }
+                    } else {
+                        const username = localStorage.getItem('username');
+                        const role = localStorage.getItem('role');
+                        if (username) {
+                            userData = { username, role, isMe: true };
+                        }
+                    }
+
+                    if (userData) {
+                        renderProfile(userData);
+                    } else {
+                        document.getElementById('profile-name').innerText = 'User Not Found';
+                    }
+
+                    updateAuthUI();
+                }
+
+                function renderProfile(user) {
+                    document.getElementById('profile-name').innerText = user.displayName || user.username || 'User';
+                    document.getElementById('profile-handle').innerText = '@' + (user.username || 'user').toLowerCase().replace(/\s/g, '');
+
+                    // FIX: Check if bio element exists before setting innerText
+                    const bioEl = document.getElementById('profile-bio');
+                    if (bioEl) {
+                        bioEl.innerText = user.bio || "Digital Craftsman & Writer. Building things for the web and sharing what I learn along the way.";
+                    }
+
+                    document.getElementById('profile-role').innerText = (user.role || 'Reader').charAt(0).toUpperCase() + (user.role || 'reader').slice(1);
+                    const initial = (user.username || 'U').charAt(0).toUpperCase();
+                    const avatarEl = document.getElementById('profile-avatar');
+
+                    // Clear previous content
+                    avatarEl.innerHTML = '';
+                    avatarEl.style.backgroundImage = 'none';
+
+                    if (user.profilePicture) {
+                        // If user has a picture, show it
+                        // Ensure we handle the path correctly whether it starts with / or http
+                        avatarEl.style.backgroundImage = `url('${user.profilePicture}')`;
+                        avatarEl.style.backgroundSize = 'cover';
+                        avatarEl.style.backgroundPosition = 'center';
+                        avatarEl.innerText = '';
+                    } else {
+                        avatarEl.innerText = initial;
+                        avatarEl.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; // Reset default gradient
+                    }
+
+                    // Show Settings Button if Me
+                    const token = localStorage.getItem('token');
+                    if (token && user._id) {
+                        try {
+                            const payload = JSON.parse(atob(token.split('.')[1]));
+                            if (payload.user.id === user._id) {
+                                showSettingsButton(user);
+                                enableAvatarUpload(user, avatarEl);
+                            }
+                        } catch (e) { }
+                    } else if (!user._id && user.isMe) {
+                        // Local storage fallback
+                        if (!user.email) fetchMeData();
+                        // We can try to enable upload if we suspect it's me, but better to wait for data
+                    }
+                }
+
+                async function fetchMeData() {
+                    // Helper to get full profile for Settings if we only have localStorage data
+                    // Since we implemented the routes, let's assume we can fetch via token
+                    // But we didn't implement /auth/me. 
+                    // We'll decode token to get ID, then fetch /users/:id
+                    try {
+                        const token = localStorage.getItem('token');
+                        if (!token) return;
+                        const payload = JSON.parse(atob(token.split('.')[1]));
+                        const res = await fetch(`${API_URL}/users/${payload.user.id}`);
+                        if (res.ok) {
+                            const fullUser = await res.json();
+                            renderProfile({ ...fullUser, isMe: true }); // Re-render with full data
+                        }
+                    } catch (e) { }
+                }
+
+                function showSettingsButton(user) {
+                    // Avoid duplicates
+                    if (document.getElementById('settings-btn')) return;
+
+                    const btn = document.createElement('button');
+                    btn.id = 'settings-btn';
+                    btn.className = 'auth-btn secondary';
+                    btn.style.marginTop = '20px';
+                    btn.style.marginBottom = '20px';
+                    btn.style.width = '100%';
+                    btn.innerHTML = '<i class="fas fa-cog"></i> Edit Profile';
+                    btn.onclick = () => openSettings(user);
+
+                    const card = document.querySelector('.profile-card');
+                    const links = document.querySelector('.social-links');
+                    if (card && links) card.insertBefore(btn, links);
+                }
+
+                function enableAvatarUpload(user, avatarEl) {
+                    // Check if input exists
+                    if (document.getElementById('avatarInput')) return;
+
+                    // Create hidden input
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.id = 'avatarInput';
+                    input.style.display = 'none';
+                    input.accept = 'image/*';
+                    document.body.appendChild(input);
+
+                    // Add click handler to avatar
+                    avatarEl.style.cursor = 'pointer';
+                    avatarEl.title = 'Click to upload photo';
+
+                    // Add camera overlay on hover (optional, but good for UX)
+                    // For simplicity, just click
+                    avatarEl.onclick = () => input.click();
+
+                    // Handle file selection
+                    input.onchange = async (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+
+                        const formData = new FormData();
+                        formData.append('avatar', file);
+
+                        try {
+                            const token = localStorage.getItem('token');
+                            // Show loading state?
+                            avatarEl.style.opacity = '0.5';
+
+                            const res = await fetch(`${API_URL}/users/avatar`, {
+                                method: 'POST',
+                                headers: {
+                                    'x-auth-token': token
+                                },
+                                body: formData
+                            });
+
+                            const data = await res.json();
+                            avatarEl.style.opacity = '1';
+
+                            if (res.ok) {
+                                // Update avatar immediately
+                                avatarEl.style.backgroundImage = `url('${data.filePath}')`;
+                                avatarEl.style.backgroundSize = 'cover';
+                                avatarEl.style.backgroundPosition = 'center';
+                                avatarEl.innerText = '';
+                                alert('Profile picture updated!');
+                            } else {
+                                alert(data.msg || 'Upload failed');
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            avatarEl.style.opacity = '1';
+                            alert('Error uploading image');
+                        }
+                    };
+                }
+
+                function openSettings(user) {
+                    document.getElementById('setDisplayName').value = user.displayName || '';
+                    document.getElementById('setUsername').value = user.username || '';
+                    document.getElementById('setBio').value = user.bio || '';
+                    document.getElementById('setEmail').value = user.email || '';
+                    openModal('settingsModal');
+                }
+
+                function switchSettingsTab(tab) {
+                    const profileForm = document.getElementById('settingsProfileForm');
+                    const securityForm = document.getElementById('settingsSecurityForm');
+                    const tabProfile = document.getElementById('tab-profile');
+                    const tabSecurity = document.getElementById('tab-security');
+
+                    if (tab === 'profile') {
+                        profileForm.style.display = 'block';
+                        securityForm.style.display = 'none';
+                        tabProfile.classList.add('active');
+                        tabProfile.style.borderBottom = '2px solid var(--accent)';
+                        tabSecurity.classList.remove('active');
+                        tabSecurity.style.borderBottom = '2px solid transparent';
+                    } else {
+                        profileForm.style.display = 'none';
+                        securityForm.style.display = 'block';
+                        tabProfile.classList.remove('active');
+                        tabProfile.style.borderBottom = '2px solid transparent';
+                        tabSecurity.classList.add('active');
+                        tabSecurity.style.borderBottom = '2px solid var(--accent)';
+                    }
+                }
+
+                // Settings Form Submissions
+                const profileForm = document.getElementById('settingsProfileForm');
+                if (profileForm) {
+                    profileForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const displayName = document.getElementById('setDisplayName').value;
+                        const username = document.getElementById('setUsername').value;
+                        const bio = document.getElementById('setBio').value;
+                        const email = document.getElementById('setEmail').value;
+                        const msg = document.getElementById('profileMsg');
+
+                        try {
+                            const token = localStorage.getItem('token');
+                            const res = await fetch(`${API_URL}/users/profile`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'x-auth-token': token
+                                },
+                                body: JSON.stringify({ displayName, username, bio, email })
+                            });
+                            const data = await res.json();
+
+                            if (res.ok) {
+                                msg.style.color = 'green';
+                                msg.innerText = 'Profile updated!';
+                                renderProfile({ ...data, isMe: true });
+                                localStorage.setItem('username', data.username);
+                                setTimeout(() => {
+                                    closeModal('settingsModal');
+                                    msg.innerText = '';
+                                }, 1000);
+                            } else {
+                                msg.style.color = 'red';
+                                msg.innerText = data.msg || 'Update failed';
+                            }
+                        } catch (err) {
+                            msg.style.color = 'red';
+                            msg.innerText = 'Server error';
+                        }
+                    });
+                }
+
+                const securityForm = document.getElementById('settingsSecurityForm');
+                if (securityForm) {
+                    securityForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const currentPassword = document.getElementById('currentPassword').value;
+                        const newPassword = document.getElementById('newPassword').value;
+                        const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+                        const msg = document.getElementById('securityMsg');
+
+                        if (newPassword !== confirmNewPassword) {
+                            msg.style.color = 'red';
+                            msg.innerText = "New passwords don't match";
+                            return;
+                        }
+
+                        try {
+                            const token = localStorage.getItem('token');
+                            const res = await fetch(`${API_URL}/users/password`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'x-auth-token': token
+                                },
+                                body: JSON.stringify({ currentPassword, newPassword })
+                            });
+                            const data = await res.json();
+
+                            if (res.ok) {
+                                msg.style.color = 'green';
+                                msg.innerText = 'Password updated!';
+                                securityForm.reset();
+                            } else {
+                                msg.style.color = 'red';
+                                msg.innerText = data.msg || 'Update failed';
+                            }
+                        } catch (err) {
+                            msg.style.color = 'red';
+                            msg.innerText = 'Server error';
+                        }
+                    });
+                }
+                function updateAuthUI() {
+                    const token = localStorage.getItem('token');
+                    const authSection = document.getElementById('auth-section');
+
+                    if (token) {
+                        const username = localStorage.getItem('username');
+                        authSection.innerHTML = `
+                        <div id="user-greeting" style="margin-bottom:10px; font-weight:600;">Welcome, ${username}</div>
+                        <button class="auth-btn secondary" onclick="logout()">Log Out</button>
+                     `;
+                    } else {
+                        authSection.innerHTML = `
+                        <button class="auth-btn" onclick="openModal('loginModal')">Sign In</button>
+                        <button class="auth-btn secondary" onclick="openModal('registerModal')">Sign Up</button>
+                     `;
+                    }
+                }
+
+                function logout() {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('role');
+                    window.location.reload();
+                }
+
+                window.addEventListener('DOMContentLoaded', loadProfile);
+            </script>
 
             <!-- PROJECTS SECTION -->
             <section class="fade-in" style="animation-delay: 0.2s;">

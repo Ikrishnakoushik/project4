@@ -71,21 +71,28 @@
             padding: 40px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             position: relative;
-            overflow: hidden;
-            animation: slideUp 0.6s ease-out;
+            /* overflow: hidden;  <-- Removing this to allow dropdowns/content to show if needed, 
+               but main issue might be fixed height or viewport constraints. 
+               Let's ensure it has max-height and scrolling if screen is tiny. */
+            overflow-y: auto;
+            max-height: 90vh;
+            /* Hide scrollbar for Chrome/Safari/Opera */
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE/Edge */
         }
 
+        .auth-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        } 
+        */
 
         .back-link {
             position: absolute;
@@ -356,6 +363,11 @@
 
         </div>
     </div>
+
+    <footer
+        style="position: fixed; bottom: 10px; text-align: center; width: 100%; color: rgba(255,255,255,0.5); font-size: 0.8rem;">
+        &copy; 2026 Prism. All rights reserved.
+    </footer>
 
     <script>
         const indicator = document.getElementById('indicator');

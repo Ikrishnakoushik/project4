@@ -20,6 +20,18 @@ const UserSchema = new mongoose.Schema({
         enum: ['publisher', 'reader'],
         default: 'reader'
     },
+    displayName: {
+        type: String,
+        default: ''
+    },
+    bio: {
+        type: String,
+        default: ''
+    },
+    profilePicture: {
+        type: String,
+        default: '' // URL or path to image
+    },
     loginHistory: [{
         type: Date,
         default: Date.now
