@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Guidelines | Prism</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --surface: #ffffff;
+            --primary: #8b5cf6;
+            /* Purple for Community */
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .intro {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .guideline-card {
+            background: var(--surface);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            transition: 0.2s;
+        }
+
+        .guideline-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .card-content h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
+        }
+
+        .card-content p {
+            margin: 0;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .report-section {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background: #fff1f2;
+            border-radius: 20px;
+            border: 1px solid #fecdd3;
+        }
+
+        .report-section h2 {
+            color: #be123c;
+            margin-top: 0;
+        }
+
+        .report-btn {
+            background: #be123c;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 40px;
+            color: var(--text-muted);
+            text-decoration: none;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="hero">
+            <h1>Community Guidelines</h1>
+            <p class="intro">At Prism, we are building a space for thoughtful, respectful, and enriching conversations.
+                These guidelines help keep our community safe.</p>
+        </div>
+
+        <div class="guideline-card">
+            <div class="icon-box"><i class="fas fa-heart"></i></div>
+            <div class="card-content">
+                <h3>Be Respectful</h3>
+                <p>Treat everyone with respect. Harassment, hate speech, and personal attacks are strictly prohibited.
+                    We are here to learn from each other.</p>
+            </div>
+        </div>
+
+        <div class="guideline-card">
+            <div class="icon-box"><i class="fas fa-brain"></i></div>
+            <div class="card-content">
+                <h3>Share Knowledge, Not Noise</h3>
+                <p>Prism is for high-quality "Spreads". Ensure your content adds value, whether it's an article, a
+                    tutorial, or an insightful thought.</p>
+            </div>
+        </div>
+
+        <div class="guideline-card">
+            <div class="icon-box"><i class="fas fa-shield-alt"></i></div>
+            <div class="card-content">
+                <h3>Authenticity Matters</h3>
+                <p>Do not impersonate others or spread misinformation. Be transparent about your sources and
+                    affiliations.</p>
+            </div>
+        </div>
+
+        <div class="report-section">
+            <h2><i class="fas fa-flag"></i> See something wrong?</h2>
+            <p>If you encounter content that violates these rules, please report it immediately.</p>
+            <a href="mailto:support@prism.com" class="report-btn">Report an Issue</a>
+        </div>
+
+        <a href="main.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Feed</a>
+    </div>
+
+</body>
+
+</html>

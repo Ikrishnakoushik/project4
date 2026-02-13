@@ -15,10 +15,12 @@ const nodemailer = require('nodemailer');
 
 // Nodemailer Transporter (Configure with your email service)
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // or your preferred service
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // Use SSL
     auth: {
         user: 'meta81210@gmail.com',
-        pass: 'mlonvmknxplafkrj'
+        pass: 'zidl aiex mtza umao',
     }
 });
 
@@ -29,11 +31,18 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: '*', // Allow all origins (including file://)
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'x-auth-token']
+}));
 app.use(express.json());
+// Request Logger
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Middleware to verify token
 const auth = (req, res, next) => {
     const token = req.header('x-auth-token');
     if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
@@ -247,6 +256,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
 
 
         // Send Email
+        console.log(`[DEBUG] Sending Forgot Password OTP to ${user.email}`);
         const mailOptions = {
             from: process.env.EMAIL_USER || 'no-reply@prism.com',
             to: user.email,
@@ -256,10 +266,10 @@ app.post('/api/auth/forgot-password', async (req, res) => {
 
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-                console.error('Error sending email:', error);
+                console.error('[DEBUG] Error sending email:', error);
                 return res.status(500).json({ msg: 'Error sending email. Please check server logs and credentials.' });
             } else {
-                console.log('Email sent: ' + info.response);
+                console.log('[DEBUG] Email sent: ' + info.response);
                 res.json({ msg: 'OTP sent to email', email: user.email });
             }
         });
@@ -548,6 +558,7 @@ app.post('/api/posts/:id/comment', auth, async (req, res) => {
 
 // Get All Posts
 app.get('/api/posts', async (req, res) => {
+    console.log('GET /api/posts hit');
     try {
         const posts = await Post.find()
             .sort({ createdAt: -1 })

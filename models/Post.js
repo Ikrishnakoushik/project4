@@ -22,7 +22,21 @@ const PostSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ['World News', 'Sports', 'Study', 'Animals', 'Coding', 'Other', 'General'],
+        enum: [
+            'Global Affairs',
+            'Technology & Innovation',
+            'Business & Finance',
+            'Science & Environment',
+            'Arts & Culture',
+            'Health & Wellness',
+            'Sports & Athletics',
+            'Education & Career',
+            'Lifestyle & Travel',
+            'Opinion & Commentary',
+            'Other',
+            // Legacy support
+            'World News', 'Sports', 'Study', 'Animals', 'Coding', 'General'
+        ],
         default: 'General'
     },
     videoUrl: {
