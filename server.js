@@ -253,11 +253,10 @@ app.post('/api/auth/forgot-password', async (req, res) => {
         user.resetPasswordOtp = otp;
         user.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
         await user.save();
-
-
+        console.log(`[DEBUG] OTP saved for ${user.email}: ${otp}`);
 
         // Send Email
-        console.log(`[DEBUG] Sending Forgot Password OTP to ${user.email}`);
+        console.log(`[DEBUG] Attempting to send Forgot Password OTP to ${user.email}`);
         const mailOptions = {
             from: process.env.EMAIL_USER || 'no-reply@prism.com',
             to: user.email,
@@ -267,16 +266,17 @@ app.post('/api/auth/forgot-password', async (req, res) => {
 
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-                console.error('[DEBUG] Error sending email:', error);
-                return res.status(500).json({ msg: 'Error sending email. Please check server logs and credentials.' });
+                console.error('[DEBUG] Nodemailer Error:', error);
+                // Don't leak full error to client, but log it
+                return res.status(500).json({ msg: 'Error sending email. Server logs have details.' });
             } else {
-                console.log('[DEBUG] Email sent: ' + info.response);
+                console.log('[DEBUG] Email sent successfully: ' + info.response);
                 res.json({ msg: 'OTP sent to email', email: user.email });
             }
         });
 
     } catch (err) {
-        console.error(err.message);
+        console.error('[DEBUG] Server Error in Forgot Password:', err);
         res.status(500).send('Server Error');
     }
 });

@@ -444,14 +444,17 @@
     </footer>
 
     <script>
-        // Apply Theme from LocalStorage immediately
+        // Apply Full Theme from LocalStorage
         (function () {
-            const savedAccent = localStorage.getItem('prism-theme-accent');
-            if (savedAccent) {
-                document.documentElement.style.setProperty('--primary', savedAccent);
-                // Auth page might use different variables, let's update common ones
-                document.documentElement.style.setProperty('--accent', savedAccent);
-            }
+            try {
+                const themeData = localStorage.getItem('prism-theme-data');
+                if (themeData) {
+                    const colors = JSON.parse(themeData);
+                    Object.entries(colors).forEach(([key, value]) => {
+                        document.documentElement.style.setProperty(key, value);
+                    });
+                }
+            } catch (e) { console.error(e); }
         })();
 
         const indicator = document.getElementById('indicator');
@@ -635,7 +638,9 @@
             e.preventDefault();
             const email = document.getElementById('forgotEmail').value;
             const btn = document.getElementById('btnSendOtp');
+            const errorMsg = document.getElementById('forgotError1');
 
+            btn.disabled = true;
             btn.innerText = 'Sending...';
             errorMsg.innerText = '';
 
@@ -662,6 +667,7 @@
                 errorMsg.innerText = 'Server error. Please try again.';
             } finally {
                 btn.innerText = 'Send OTP';
+                btn.disabled = false;
             }
         });
 

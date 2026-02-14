@@ -462,13 +462,17 @@
     </div>
 
     <script>
-        // Apply Theme from LocalStorage immediately
+        // Apply Full Theme from LocalStorage immediately
         (function () {
-            const savedAccent = localStorage.getItem('prism-theme-accent');
-            if (savedAccent) {
-                document.documentElement.style.setProperty('--primary', savedAccent);
-                document.documentElement.style.setProperty('--accent', savedAccent);
-            }
+            try {
+                const themeData = localStorage.getItem('prism-theme-data');
+                if (themeData) {
+                    const colors = JSON.parse(themeData);
+                    Object.entries(colors).forEach(([key, value]) => {
+                        document.documentElement.style.setProperty(key, value);
+                    });
+                }
+            } catch (e) { console.error(e); }
         })();
 
         const API_URL = (window.location.hostname === 'localhost' || window.location.protocol === 'file:')
