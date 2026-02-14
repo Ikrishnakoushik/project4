@@ -8,6 +8,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
+        // Global Error Handler for debugging
+        window.onerror = function (msg, url, line, col, error) {
+            const container = document.getElementById('feed-container');
+            if (container) {
+                container.innerHTML = `<div style="color:red; padding:20px; text-align:center; border:1px solid red; margin:20px;">
+                    <strong>Script Error:</strong> ${msg}<br>
+                    <small>${url}:${line}:${col}</small>
+                </div>`;
+            }
+            return false;
+        };
+
         // Apply Full Theme from LocalStorage immediately
         (function () {
             try {
@@ -602,18 +614,22 @@
         }
 
         /* Reader Mode Overlay - Premium Redesign */
+        /* Reader Mode Overlay - Premium Redesign */
         #reader-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.98);
+            background: var(--surface);
+            /* changed from rgba(255, 255, 255, 0.98) */
             z-index: 2000;
             display: none;
             overflow-y: auto;
             backdrop-filter: blur(8px);
+            /* Optional: keeps blur if supported */
             animation: fadeIn 0.3s ease;
+            transition: background-color 0.3s;
         }
 
         #reader-overlay.active {
@@ -624,32 +640,45 @@
             max-width: 800px;
             margin: 60px auto;
             padding: 60px;
-            background: white;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            background: var(--surface);
+            /* changed from white */
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
             border-radius: 4px;
             position: relative;
             min-height: 100vh;
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .reader-close {
             position: fixed;
             top: 30px;
             right: 30px;
-            background: white;
-            border: 1px solid #e2e8f0;
+            background: var(--surface);
+            /* changed from white */
+            border: 1px solid var(--border);
             width: 48px;
             height: 48px;
             border-radius: 50%;
             cursor: pointer;
             font-size: 1.2rem;
-            color: #1e293b;
+            color: var(--text-main);
+            /* changed from #1e293b */
             z-index: 2001;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: all 0.2s;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
         }
+
+        .reader-close:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+
 
         .reader-close:hover {
             transform: scale(1.1);
@@ -928,6 +957,77 @@
         .read-story-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        /* Create Post Placeholder */
+        .create-post-placeholder {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 15px 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .create-post-placeholder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .create-post-placeholder:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        .create-post-placeholder:hover::before {
+            opacity: 1;
+        }
+
+        .create-input {
+            flex: 1;
+            background: var(--bg-body);
+            padding: 12px 20px;
+            border-radius: 99px;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .create-post-placeholder:hover .create-input {
+            background: #fff;
+            border-color: #e2e8f0;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+            color: var(--text-main);
+        }
+
+        /* Avatar in placeholder adjustment */
+        .create-post-placeholder .avatar-sm {
+            width: 40px;
+            height: 40px;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            color: #64748b;
+            box-shadow: none;
+        }
+
+        .create-post-placeholder:hover .avatar-sm {
+            transform: scale(1.05);
+            color: var(--accent);
         }
     </style>
 </head>
@@ -1230,6 +1330,7 @@
         }
 
         // Initialize
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             // Dark mode init
             if (localStorage.getItem('theme') === 'dark') {
@@ -1241,17 +1342,72 @@
         });
 
         async function fetchPosts() {
+            console.log('fetchPosts called');
             const container = document.getElementById('feed-container');
             // Try to find the loading text paragraph to update it
             const loadingText = container.querySelector('p');
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+            const timeoutId = setTimeout(() => controller.abort(), 8000); // Increased timeout
 
             try {
                 if (loadingText) loadingText.innerText = `Connecting to ${API_URL}...`;
+                console.log(`Fetching from: ${API_URL}/posts`);
 
                 const res = await fetch(`${API_URL}/posts`, { signal: controller.signal });
                 clearTimeout(timeoutId);
+                console.log('Fetch response received', res.status);
+
+                if (loadingText) loadingText.innerText = 'Receiving data from server...';
+
+                if (!res.ok) {
+                    throw new Error(`Server responded with status ${res.status}`);
+                }
+
+                const posts = await res.json();
+
+                if (loadingText) loadingText.innerText = `Processing ${posts.length} posts...`;
+
+                allPosts = posts;
+                renderPosts(posts);
+            } catch (err) {
+                console.error(err);
+
+                let errorMsg = err.message;
+                if (err.name === 'AbortError') errorMsg = "Connection timed out. Server is not responding.";
+
+                container.innerHTML = `
+                    <div style="text-align: center; color: var(--error); padding: 20px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 12px;">
+                        <i class="fas fa-exclamation-triangle fa-2x" style="margin-bottom: 10px;"></i><br>
+                        <strong>Failed to load feed.</strong><br>
+                        <span style="font-size: 0.9em; opacity: 0.8;">${errorMsg}</span><br>
+                        
+                         <div style="text-align: left; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 8px; font-family: monospace; font-size: 0.8rem; margin: 15px 0;">
+                            <strong>Debug Info:</strong><br>
+                            URL: ${API_URL}/posts<br>
+                            Protocol: ${window.location.protocol}<br>
+                            Hostname: ${window.location.hostname}
+                        </div>
+
+                        <button onclick="fetchPosts()" class="btn btn-primary" style="margin-top: 15px; padding: 8px 16px; font-size: 0.9em;">Retry</button>
+                    </div>`;
+            }
+        }
+
+        async function fetchPosts() {
+            console.log('fetchPosts called');
+            const container = document.getElementById('feed-container');
+            // Try to find the loading text paragraph to update it
+            const loadingText = container.querySelector('p');
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000); // Increased timeout
+
+            try {
+                if (loadingText) loadingText.innerText = `Connecting to ${API_URL}...`;
+                console.log(`Fetching from: ${API_URL}/posts`);
+
+                const res = await fetch(`${API_URL}/posts`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                console.log('Fetch response received', res.status);
 
                 if (loadingText) loadingText.innerText = 'Receiving data from server...';
 
@@ -1713,6 +1869,40 @@
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
             const match = url.match(regExp);
             return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function updateAuthLink() {
+            const token = localStorage.getItem('token');
+            const userMenu = document.querySelector('.user-menu');
+            if (!userMenu) return;
+
+            if (token) {
+                // Logged in: show profile icon (already default, but maybe update avatar?)
+                // For now, default is fine.
+                // Could also add Logout button
+                const logoutBtn = document.createElement('a');
+                logoutBtn.href = "#";
+                logoutBtn.className = "nav-item";
+                logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i>';
+                logoutBtn.title = "Logout";
+                logoutBtn.onclick = (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('role');
+                    localStorage.removeItem('user');
+                    window.location.href = 'auth.html';
+                };
+                userMenu.appendChild(logoutBtn);
+            } else {
+                // Not logged in: Show Login button
+                userMenu.innerHTML = `
+                    <a href="auth.html" class="action-btn" style="text-decoration: none; font-weight: 700; color: var(--primary);">
+                        Login
+                    </a>
+                    <a href="auth.html" class="btn btn-primary" style="padding: 8px 20px; text-decoration: none; color: white; border-radius: 20px; background: var(--primary);">
+                        Sign Up
+                    </a>`;
+            }
         }
 
         // Carousel Logic

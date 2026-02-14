@@ -55,6 +55,12 @@ const UserSchema = new mongoose.Schema({
     preferences: [{
         type: String,
         enum: ['World News', 'Sports', 'Study', 'Animals', 'Coding', 'Other']
+    }],
+    projects: [{
+        title: { type: String, required: true },
+        description: { type: String },
+        link: { type: String },
+        icon: { type: String, default: '🚀' }
     }]
 });
 

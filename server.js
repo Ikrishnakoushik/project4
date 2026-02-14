@@ -22,6 +22,18 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: 'meta81210@gmail.com',
         pass: 'zidl aiex mtza umao',
+    },
+    connectionTimeout: 10000, // 10 seconds timeout
+    greetingTimeout: 5000,
+    socketTimeout: 10000
+});
+
+// Verify Transporter Connection
+transporter.verify(function (error, success) {
+    if (error) {
+        console.error('[Nodemailer Error] Connection failed:', error);
+    } else {
+        console.log('[Nodemailer] Server is ready to take our messages');
     }
 });
 
@@ -258,7 +270,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
         // Send Email
         console.log(`[DEBUG] Attempting to send Forgot Password OTP to ${user.email}`);
         const mailOptions = {
-            from: process.env.EMAIL_USER || 'no-reply@prism.com',
+            from: 'Prism <meta81210@gmail.com>', // Use authenticated email
             to: user.email,
             subject: 'Prism - Password Reset OTP',
             text: `Your OTP for password reset is: ${otp}\n\nIt expires in 10 minutes.`
@@ -580,14 +592,23 @@ app.post('/api/posts/:id/comment', auth, async (req, res) => {
     }
 });
 
-// Get All Posts
+// Get All Posts (with optional filtering)
 app.get('/api/posts', async (req, res) => {
-    console.log('GET /api/posts hit');
+    console.log('GET /api/posts hit', req.query);
     try {
-        const posts = await Post.find()
+        const query = {};
+        if (req.query.user) {
+            query.user = req.query.user;
+        }
+
+        // If category filtering is needed later
+        // if (req.query.category) query.category = req.query.category;
+
+        const posts = await Post.find(query)
             .sort({ createdAt: -1 })
-            .populate('user', 'username profilePicture')
-            .populate('comments.user', 'username profilePicture');
+            .populate('user', 'username profilePicture') // Population is key for avatars
+            .populate('comments.user', 'username profilePicture'); // Populate comment authors too
+
         res.json(posts);
     } catch (err) {
         console.error(err.message);
@@ -617,6 +638,43 @@ app.get('/ping', (req, res) => {
 app.use((err, req, res, next) => {
     console.error('Unhandled Error:', err);
     res.status(500).send('Something broke!');
+});
+
+// --- PROJECTS API ---
+// Add a project
+app.post('/api/users/projects', auth, async (req, res) => {
+    try {
+        const { title, description, link, icon } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+
+        const newProject = { title, description, link, icon: icon || '🚀' };
+        user.projects.unshift(newProject); // Add to beginning
+        await user.save();
+
+        res.json(user.projects);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Delete a project
+app.delete('/api/users/projects/:id', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+
+        // Filter out project
+        user.projects = user.projects.filter(p => p._id.toString() !== req.params.id);
+        await user.save();
+
+        res.json(user.projects);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
 });
 
 // Start Server

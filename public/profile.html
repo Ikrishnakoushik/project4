@@ -398,6 +398,52 @@
             color: var(--accent);
         }
 
+        /* --- FORMATTED CONTENT STYLES --- */
+        .blog-excerpt h2,
+        .blog-excerpt h3 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.15rem;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .blog-excerpt p {
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+
+        .blog-excerpt a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .blog-excerpt a:hover {
+            text-decoration: underline;
+        }
+
+        .blog-excerpt blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 20px 0;
+            padding: 15px 20px;
+            color: var(--text-light);
+            font-style: italic;
+            background: #f8fafc;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .blog-excerpt strong {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .blog-excerpt img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
         /* Newsletter */
         .newsletter {
             background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
@@ -552,6 +598,167 @@
             text-decoration: none;
             font-weight: 600;
             cursor: pointer;
+        }
+
+        /* --- POST CARD & ACTIONS (Ported from Main) --- */
+        .post-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .post-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .post-user-info {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .post-author {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .post-time {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .post-tag {
+            font-size: 0.75rem;
+            background: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 12px;
+            color: #475569;
+        }
+
+        .post-actions {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-around;
+            color: #64748b;
+        }
+
+        .action-btn {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .action-btn:hover {
+            background: #f1f5f9;
+            color: var(--accent);
+        }
+
+        /* Reader Overlay */
+        .reader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 2000;
+            overflow-y: auto;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .reader-overlay.active {
+            display: block;
+        }
+
+        .reader-content {
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 40px;
+            position: relative;
+        }
+
+        .reader-close {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f1f5f9;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .reader-close:hover {
+            background: #e2e8f0;
+            transform: rotate(90deg);
+        }
+
+        .reader-title {
+            font-size: 2.5rem;
+            font-family: 'Outfit', sans-serif;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .reader-meta {
+            color: #64748b;
+            font-size: 1rem;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 20px;
+        }
+
+        .reader-body {
+            font-family: 'Georgia', serif;
+            font-size: 1.25rem;
+            line-height: 1.8;
+            color: #334155;
+        }
+
+        .reader-body p {
+            margin-bottom: 1.5em;
+        }
+
+        .reader-body h2 {
+            font-size: 1.8rem;
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .reader-body blockquote {
+            border-left: 4px solid var(--accent);
+            padding: 15px 25px;
+            margin: 2em 0;
+            font-style: italic;
+            background: #f8fafc;
         }
     </style>
 </head>
@@ -735,13 +942,72 @@
                             if (payload.user.id === user._id) {
                                 showSettingsButton(user);
                                 enableAvatarUpload(user, avatarEl);
+                                // Show Add Project Button
+                                const addProjBtn = document.getElementById('add-project-btn');
+                                if (addProjBtn) addProjBtn.style.display = 'inline-block';
                             }
                         } catch (e) { }
                     } else if (!user._id && user.isMe) {
                         // Local storage fallback
                         if (!user.email) fetchMeData();
-                        // We can try to enable upload if we suspect it's me, but better to wait for data
                     }
+
+                    // Render Projects
+                    renderProjects(user.projects || [], user._id === (token ? JSON.parse(atob(token.split('.')[1])).user.id : null));
+                }
+
+                function renderProjects(projects, isMe) {
+                    const grid = document.getElementById('projects-grid');
+                    grid.innerHTML = '';
+
+                    if (projects.length === 0) {
+                        if (isMe) {
+                            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:20px; color:#888;">No projects yet. Add one to showcase your work!</div>';
+                        } else {
+                            // Static placeholders for others if empty, or just empty?
+                            // Let's show existing placeholders if empty for "demo" feel, or just text.
+                            // User requested "Options to use", implying they want to see their own.
+                            // Let's stick to empty message.
+                            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:20px; color:#888;">No projects to show.</div>';
+                        }
+                    }
+
+                    projects.forEach(proj => {
+                        const div = document.createElement('a');
+                        div.href = proj.link || '#';
+                        div.className = 'project-card';
+                        div.target = '_blank';
+                        div.innerHTML = `
+            <div class="project-img">${proj.icon || '🚀'}</div>
+            <div class="project-content">
+                <h3 class="project-title">${proj.title}
+                    ${isMe ? `<span onclick="deleteProject(event, '${proj._id}')" style="float:right; color:red; cursor:pointer; font-size:0.8rem;"><i class="fas fa-trash"></i></span>` : ''}
+                </h3>
+                <p class="project-desc">${proj.description || ''}</p>
+            </div>
+        `;
+                        grid.appendChild(div);
+                    });
+                }
+
+                async function deleteProject(e, id) {
+                    e.preventDefault();
+                    if (!confirm('Delete this project?')) return;
+
+                    try {
+                        const token = localStorage.getItem('token');
+                        const res = await fetch(`${API_URL}/users/projects/${id}`, {
+                            method: 'DELETE',
+                            headers: { 'x-auth-token': token }
+                        });
+                        if (res.ok) {
+                            const updatedProjects = await res.json();
+                            // We need to re-render. Since we don't have full user obj here, 
+                            // we can just re-load profile or cheat.
+                            // Easiest is to reload profile.
+                            loadProfile();
+                        }
+                    } catch (err) { console.error(err); }
                 }
 
                 async function fetchMeData() {
@@ -799,7 +1065,41 @@
                     // For simplicity, just click
                     avatarEl.onclick = () => input.click();
 
-                    // Handle file selection
+                    // Handle Project Add
+                    if (document.getElementById('projectForm')) {
+                        document.getElementById('projectForm').addEventListener('submit', async (e) => {
+                            e.preventDefault();
+                            const title = document.getElementById('projTitle').value;
+                            const description = document.getElementById('projDesc').value;
+                            const link = document.getElementById('projLink').value;
+                            const icon = document.getElementById('projIcon').value;
+
+                            try {
+                                const token = localStorage.getItem('token');
+                                const res = await fetch(`${API_URL}/users/projects`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'x-auth-token': token
+                                    },
+                                    body: JSON.stringify({ title, description, link, icon })
+                                });
+
+                                if (res.ok) {
+                                    closeModal('projectModal');
+                                    document.getElementById('projectForm').reset();
+                                    loadProfile(); // Refresh
+                                } else {
+                                    alert('Failed to add project');
+                                }
+                            } catch (err) {
+                                console.error(err);
+                                alert('Error adding project');
+                            }
+                        });
+                    }
+
+                    // Handle Register selection
                     input.onchange = async (e) => {
                         const file = e.target.files[0];
                         if (!file) return;
@@ -988,25 +1288,16 @@
             <section class="fade-in" style="animation-delay: 0.2s;">
                 <div class="section-header">
                     <h2 class="section-title">Selected Projects</h2>
-                    <a href="#" class="view-all">View All</a>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <button id="add-project-btn" class="action-btn"
+                            style="display:none; padding: 5px 10px; font-size: 0.8rem; background: var(--accent); color: white; border:none;"
+                            onclick="openModal('projectModal')"><i class="fas fa-plus"></i> Add</button>
+                        <a href="#" class="view-all">View All</a>
+                    </div>
                 </div>
 
-                <div class="projects-grid">
-                    <a href="#" class="project-card">
-                        <div class="project-img">🚀</div>
-                        <div class="project-content">
-                            <h3 class="project-title">Project Alpha</h3>
-                            <p class="project-desc">A minimal task manager for creative teams.</p>
-                        </div>
-                    </a>
-                    <a href="#" class="project-card">
-                        <div class="project-img">🎨</div>
-                        <div class="project-content">
-                            <h3 class="project-title">Design System</h3>
-                            <p class="project-desc">Open source UI kit for modern web apps.</p>
-                        </div>
-                    </a>
-                </div>
+                <div class="projects-grid" id="projects-grid">
+                    <!-- Projects injected via JS -->
             </section>
 
             <!-- CREATE POST (Only visible when logged in) -->
@@ -1103,6 +1394,33 @@
             <div class="switch-auth">
                 Already have an account? <a onclick="switchModal('registerModal', 'loginModal')">Sign In</a>
             </div>
+        </div>
+    </div>
+
+    <!-- Add Project Modal -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('projectModal')">&times;</span>
+            <h2>Add Project</h2>
+            <form id="projectForm">
+                <div class="form-group">
+                    <label>Project Title</label>
+                    <input type="text" id="projTitle" required placeholder="My Awesome App">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="projDesc" placeholder="Brief summary...">
+                </div>
+                <div class="form-group">
+                    <label>Link (URL)</label>
+                    <input type="url" id="projLink" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>Icon (Emoji)</label>
+                    <input type="text" id="projIcon" placeholder="🚀" maxlength="2">
+                </div>
+                <button type="submit" class="form-btn">Add Project</button>
+            </form>
         </div>
     </div>
 
@@ -1225,34 +1543,162 @@
         // --- POSTS LOGIC ---
 
         async function fetchPosts() {
+            const container = document.getElementById('posts-container');
+
             try {
-                const res = await fetch(`${API_URL}/posts`);
-                const posts = await res.json();
+                // Determine if we are viewing a specific user's profile
+                const urlParams = new URLSearchParams(window.location.search);
+                const userId = urlParams.get('user');
 
-                const container = document.getElementById('posts-container');
-                container.innerHTML = '';
+                let url = `${API_URL}/posts`;
 
-                if (posts.length === 0) {
-                    container.innerHTML = '<div style="text-align:center; padding: 20px; color: #888;">No posts yet. Be the first to share!</div>';
-                    return;
+                // FILTERING LOGIC
+                // If viewing a user profile, show ONLY their posts
+                if (userId) {
+                    url += `?user=${userId}`;
+                } else {
+                    // If no user param, check if we are logged in and viewing "my" profile (default view)
+                    // Actually, if no user param, `loadProfile` falls back to localStorage username.
+                    // But `fetchPosts` is independent.
+                    // If we are on profile.html without ?user=..., we usually mean "My Profile".
+                    // Let's check:
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        try {
+                            const payload = JSON.parse(atob(token.split('.')[1]));
+                            // If we are strictly on profile.html with no params, it's my profile.
+                            if (!window.location.search) {
+                                url += `?user=${payload.user.id}`;
+                            }
+                        } catch (e) { }
+                    }
                 }
 
-                posts.forEach(post => {
-                    const date = new Date(post.createdAt).toLocaleDateString();
-                    const html = `
-                        <article class="blog-card">
-                            <div class="blog-meta">
-                                <span>${date} • ${post.tag}</span>
-                                <span class="blog-author">@${post.username}</span>
-                            </div>
-                            <div class="blog-excerpt">${post.content}</div>
-                        </article>
-                    `;
-                    container.innerHTML += html;
-                });
+                container.innerHTML = '<div style="text-align:center; padding: 20px; color: #888;">Loading posts...</div>';
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                const res = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
+                const posts = await res.json();
+                renderPosts(posts); // Use the new advanced renderer
+
             } catch (err) {
                 console.error(err);
+                container.innerHTML = `
+                    <div style="text-align: center; color: red; padding: 20px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px;">
+                        <i class="fas fa-exclamation-circle"></i> Failed to load feed.<br>
+                        <small>${err.message}</small><br>
+                        <button onclick="fetchPosts()" style="margin-top:10px; cursor:pointer; padding:5px 10px;">Retry</button>
+                    </div>`;
             }
+        }
+
+        function renderPosts(posts) {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '';
+
+            if (!posts || posts.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding: 20px; color: #888;">No posts yet. Be the first to share!</div>';
+                return;
+            }
+
+            posts.forEach(post => {
+                const authorName = post.user?.username || post.username || 'User';
+                const initial = authorName.charAt(0).toUpperCase();
+                const dateStr = post.createdAt ? new Date(post.createdAt).toLocaleDateString() : 'Just now';
+                const tag = post.tag || 'General';
+                const likesCount = post.likes ? post.likes.length : 0;
+                const commentsCount = post.comments ? post.comments.length : 0;
+
+                // Avatar
+                const postAvatar = post.user?.profilePicture
+                    ? `<img src="${post.user.profilePicture}" class="avatar-sm" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">`
+                    : `<div class="avatar" style="width:40px;height:40px;font-size:1.2rem;margin:0;">${initial}</div>`;
+
+                // Content Logic
+                let fullContent = LinkifyAndFormat(post.content || ''); // Use our existing formatter
+                let displayContent = fullContent;
+                let readActionBtn = '';
+
+                // Reader Mode Logic
+                const isLong = (post.content || '').length > 500;
+
+                if (isLong) {
+                    const safeTitle = (post.title || 'Update').replace(/'/g, "&apos;");
+                    const safeAuthor = authorName.replace(/'/g, "&apos;");
+                    const safeTime = dateStr.replace(/'/g, "&apos;");
+
+                    // Truncate for display
+                    // Simple truncate of HTML is hard, so we just show a snippet or the full formatted content if it's not too huge visually.
+                    // For safety, let's just use the Read Story button for long content
+
+                    readActionBtn = `
+                        <div class="action-btn" onclick="openReaderFromId('${post._id}', '${safeTitle}', '${safeAuthor}', '${safeTime}')" style="margin-left:auto; color:var(--accent); background: #eff6ff;">
+                            <i class="fas fa-book-open"></i> Read Story
+                        </div>
+                        <div id="content-store-${post._id}" style="display:none;">${fullContent}</div>
+                     `;
+                }
+
+                const postHTML = `
+                    <article class="post-card">
+                        <div class="post-header">
+                            <div class="post-user-info">
+                                ${postAvatar}
+                                <div>
+                                    <div class="post-author">@${authorName}</div>
+                                    <div class="post-time">${dateStr}</div>
+                                </div>
+                            </div>
+                            <span class="post-tag">#${tag}</span>
+                        </div>
+                        
+                        ${post.title ? `<h3 style="margin-bottom:10px; font-size:1.2rem;">${post.title}</h3>` : ''}
+                        
+                        <div class="post-content" style="margin-bottom:15px;">
+                            ${isLong ? `<div class="blog-excerpt">${fullContent.substring(0, 300)}...</div>` : `<div class="blog-excerpt">${fullContent}</div>`}
+                        </div>
+
+                        ${post.image ? `<img src="${post.image}" style="width:100%; border-radius:12px; margin-bottom:15px;">` : ''}
+
+                        <div class="post-actions">
+                            <div class="action-btn"><i class="far fa-heart"></i> ${likesCount}</div>
+                            <div class="action-btn"><i class="far fa-comment"></i> ${commentsCount}</div>
+                            <div class="action-btn"><i class="far fa-share-square"></i> Share</div>
+                            ${readActionBtn}
+                        </div>
+                    </article>
+                `;
+                container.innerHTML += postHTML;
+            });
+        }
+
+        // Reader Functions
+        function openReaderFromId(id, title, author, time) {
+            const contentDiv = document.getElementById(`content-store-${id}`);
+            if (contentDiv) {
+                openReaderFormatted(title, author, time, contentDiv.innerHTML);
+            }
+        }
+
+        function openReaderFormatted(title, author, time, contentHTML) {
+            const overlay = document.getElementById('reader-overlay');
+            document.getElementById('reader-title').innerText = title;
+            document.getElementById('reader-author').innerText = author;
+            document.getElementById('reader-time').innerText = time;
+            document.getElementById('reader-body').innerHTML = contentHTML;
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeReader() {
+            document.getElementById('reader-overlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
 
         async function createPost() {
@@ -1282,8 +1728,63 @@
                 console.error(err);
             }
         }
+
+        function LinkifyAndFormat(text) {
+            if (!text) return '';
+
+            // Check if text looks like HTML (has tags)
+            if (/<[a-z][\s\S]*>/i.test(text)) {
+                return text;
+            }
+
+            // It's likely Plain Text / Markdown
+            const lines = text.split(/\n/);
+            let html = '';
+
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+
+                if (trimmed.startsWith('### ')) {
+                    html += `<h3>${linkify(trimmed.substring(4))}</h3>`;
+                } else if (trimmed.startsWith('## ')) {
+                    html += `<h2>${linkify(trimmed.substring(3))}</h2>`;
+                } else if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
+                    html += `<p><strong>${linkify(trimmed.slice(2, -2))}</strong></p>`;
+                } else if (trimmed.startsWith('> ')) {
+                    html += `<blockquote>${linkify(trimmed.substring(2))}</blockquote>`;
+                } else {
+                    let pContent = linkify(trimmed);
+                    pContent = pContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    pContent = pContent.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                    html += `<p>${pContent}</p>`;
+                }
+            });
+
+            return html;
+        }
+
+        function linkify(text) {
+            var urlRegex = /(https?:\/\/[^\s]+)/g;
+            return text.replace(urlRegex, function (url) {
+                return '<a href="' + url + '" target="_blank">' + url + '</a>';
+            });
+        }
     </script>
 
+    <!-- READER OVERLAY -->
+    <div id="reader-overlay" class="reader-overlay">
+        <div class="reader-content">
+            <button class="reader-close" onclick="closeReader()"><i class="fas fa-times"></i></button>
+            <h1 id="reader-title" class="reader-title">Post Title</h1>
+            <div class="reader-meta">
+                <span id="reader-author">Author</span> • <span id="reader-time">Date</span>
+            </div>
+            <div id="reader-body" class="reader-body">
+                <!-- Content -->
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
